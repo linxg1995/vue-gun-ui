@@ -6,8 +6,29 @@
         <!-- <router-link to="/about">About</router-link> -->
         <!-- </div> -->
         <!-- <router-view /> -->
+        <h3>ScrollContainer</h3>
+        <gun-scroll-container style="height: 200px">
+            <div>
+                <p
+                    v-for="(i, index) in scrollContainer.list"
+                    :key="index"
+                >测试ScrollContainer,{{index}}</p>
+            </div>
+        </gun-scroll-container>
     </div>
 </template>
+
+<script>
+export default {
+    data() {
+        return {
+            scrollContainer: {
+                list: new Array(20)
+            }
+        };
+    }
+};
+</script>
 
 <style lang="scss">
 #app {

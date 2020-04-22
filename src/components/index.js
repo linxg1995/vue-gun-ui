@@ -2,7 +2,7 @@
  * @Description: 组件全局管理
  * @Author: LXG
  * @Date: 2020-04-21
- * @LastEditTime: 2020-04-21
+ * @LastEditTime: 2020-04-22
  */
 import ScrollContainer from './ScrollContainer/index.js'
 
@@ -26,5 +26,5 @@ if (typeof window !== 'undefined' && window.Vue) {
 
 export default {
     install,
-    components
+    ...components
 }

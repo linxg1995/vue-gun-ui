@@ -5,7 +5,7 @@
  * @LastEditTime: 2020-04-22
  -->
 <template>
-    <div class="gun-scrollC" ref="scrollC">
+    <div class="gun-scrollC" ref="scrollC" @mouseenter="enterScrollC" @mouseleave="leaveScrollC">
         <!-- wrap - 纵向滚动条 -->
         <div class="scrollC-scrollbarY" ref="scrollbarY">
             <div class="scrollbarY-slider" ref="scrollsliderY"></div>
@@ -22,7 +22,11 @@
 export default {
     name: "GunScrollContainer",
     props: {
-        id: String
+        // 需要X滚动条
+        scrollbarX: {
+            type: Boolean,
+            default: false
+        }
     },
     data() {
         return {
@@ -142,7 +146,7 @@ export default {
                 setTimeout(() => {
                     if (longPress) {
                         // 增加一个类名，用于增加过渡动画
-                        scrollsliderY.classList.add("isAnimation");
+                        scrollsliderY.classList.add("moveAnimation");
                         moveTimer = setInterval(() => {
                             if (inBar) {
                                 if (e.offsetY < offsetTop) {
@@ -188,7 +192,7 @@ export default {
                     clearInterval(moveTimer);
                     moveTimer = null;
                     // 定时滚动完成后移除过渡动画
-                    scrollsliderY.classList.remove("isAnimation");
+                    scrollsliderY.classList.remove("moveAnimation");
                 } else {
                     if (e.offsetY < offsetTop) {
                         this.scrollsliderYInfo.style.translateY -= 80;
@@ -304,6 +308,22 @@ export default {
             }
         },
         /**
+         * @description: 监听鼠标进入总容器
+         * @param {Event} e 事件
+         */
+        enterScrollC(e) {
+            // 显示滚动条
+            this.$refs.scrollbarY.style.opacity = 1;
+        },
+        /**
+         * @description: 监听鼠标离开总容器
+         * @param {Event} e 事件
+         */
+        leaveScrollC(e) {
+            // 隐藏滚动条
+            this.$refs.scrollbarY.style.opacity = 0;
+        },
+        /**
          * @description: 监听外容器滚动
          * @param {Event} e 事件
          */
@@ -334,6 +354,13 @@ export default {
     position: relative;
     overflow: hidden;
 }
+.scrollC-scrollbarY,
+.scrollC-scrollbarY:hover {
+    -webkit-transition: opacity 0.5s linear;
+    -moz-transition: opacity 0.5s linear;
+    -o-transition: opacity 0.5s linear;
+    transition: opacity 0.5s linear;
+}
 .scrollC-scrollbarY {
     position: absolute;
     right: 0;
@@ -341,6 +368,7 @@ export default {
     height: 100%;
     background-color: #eee;
     border-radius: 10px;
+    opacity: 0;
     .scrollbarY-slider {
         width: 10px;
         background-color: #aaa;
@@ -348,7 +376,7 @@ export default {
         &:hover {
             background-color: #888;
         }
-        &.isAnimation {
+        &.moveAnimation {
             -webkit-transition: transform 0.05s linear;
             -moz-transition: transform 0.05s linear;
             -o-transition: transform 0.05s linear;

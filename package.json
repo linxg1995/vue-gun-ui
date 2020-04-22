@@ -3,7 +3,12 @@
     "version": "0.0.1",
     "description": "vue-gun-ui，基于vue设计的UI组件库",
     "main": "lib/vue-gun-ui.umd.min.js",
-    "keyword": "gun-ui vue-gun-ui vue-gun",
+    "keywords": [
+        "vue-gun-ui",
+        "gun-ui",
+        "vue-gun",
+        "linxg1995"
+    ],
     "author": "linxg",
     "private": false,
     "license": "MIT",

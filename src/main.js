@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+// import store from './store'
 
 import vuegunui from '@/components/index.js'
 
@@ -11,6 +11,6 @@ Vue.use(vuegunui)
 
 new Vue({
     router,
-    store,
+    // store,
     render: h => h(App)
 }).$mount('#app')

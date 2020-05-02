@@ -2,18 +2,23 @@
  * @Description: 带自定义滚动条的块容器
  * @Author: LXG
  * @Date: 2020-04-21
- * @LastEditTime: 2020-04-22
+ * @LastEditTime: 2020-05-02
  -->
 <template>
     <div class="gun-scrollC" ref="scrollC" @mouseenter="enterScrollC" @mouseleave="leaveScrollC">
-        <!-- wrap - 纵向滚动条 -->
+        <!-- wrap - Y滚动条 -->
         <div class="scrollC-scrollbarY" ref="scrollbarY">
             <div class="scrollbarY-slider" ref="scrollsliderY"></div>
         </div>
+        <!-- wrap - 内容 -->
         <div class="scrollC-contentOuter" ref="contentOuter" @scroll="scrollContentOuter">
             <div class="contentOuter-contentInner" ref="contentInner">
                 <slot />
             </div>
+        </div>
+        <!-- wrap - X滚动条 -->
+        <div class="scrollC-scrollbarX" ref="scrollbarX" v-show="showX">
+            <div class="scrollbarX-slider" ref="scrollsliderX"></div>
         </div>
     </div>
 </template>
@@ -22,10 +27,10 @@
 export default {
     name: "GunScrollContainer",
     props: {
-        // 需要X滚动条
-        scrollbarX: {
+        // 显示X滚动条
+        showX: {
             type: Boolean,
-            default: false
+            default: true
         }
     },
     data() {
@@ -34,6 +39,11 @@ export default {
             scrollsliderYInfo: {
                 style: {
                     translateY: 0
+                }
+            },
+            scrollsliderXInfo: {
+                style: {
+                    translateX: 0
                 }
             }
         };
@@ -50,6 +60,8 @@ export default {
             // const scrollC = this.$refs.scrollC;
             // const scrollbarY = this.$refs.scrollbarY;
             const scrollsliderY = this.$refs.scrollsliderY;
+            // const scrollbarX = this.$refs.scrollbarX;
+            const scrollsliderX = this.$refs.scrollsliderX;
             const contentOuter = this.$refs.contentOuter;
             const contentInner = this.$refs.contentInner;
 
@@ -70,14 +82,21 @@ export default {
             //     滑块/100 = 外容器可视窗口/外容器内容窗口，得到%
             scrollsliderY.style.height = `${contentOuter.clientHeight *
                 (contentOuter.clientHeight / contentOuter.scrollHeight)}px`;
+            scrollsliderX.style.width = `${contentOuter.clientWidth *
+                (contentOuter.clientWidth / contentOuter.scrollWidth)}px`;
             // scrollsliderY.style.height = `${(contentOuter.clientHeight /
             //     contentOuter.scrollHeight) *
+            //     100}%`;
+            // scrollsliderY.style.width = `${(contentOuter.clientWidth /
+            //     contentOuter.scrollWidth) *
             //     100}%`;
 
             // ----- 监听滚动条及滑块 -----
             this.$nextTick(() => {
                 this.initBarYHandler();
                 this.initSliderYHandler();
+
+                this.initBarXHandler();
             });
 
             // ----- 监听内容器窗口 -----
@@ -307,6 +326,107 @@ export default {
                     contentOuter.clientHeight;
             }
         },
+        /**X
+         * @description: 注册X滚动条的监听
+         */
+        initBarXHandler() {
+            const scrollbarX = this.$refs.scrollbarX;
+            const scrollsliderX = this.$refs.scrollsliderX;
+            const contentOuter = this.$refs.contentOuter;
+            // offsetLeft 滑块距离左边边的位置
+            // offsetRight 滑块距离右边的位置
+            // maxScrollLeft 最大滚动宽度
+            // inBar 位于滚动条上
+            // longPress 长按
+            // moveTimer 滚动定时器
+            let offsetLeft,
+                offsetRight,
+                maxScrollLeft,
+                inBar,
+                longPress = false,
+                moveTimer = null;
+
+            scrollbarX.onmouseenter = e => {
+                inBar = true;
+            };
+            scrollbarX.onmouseleave = e => {
+                inBar = false;
+            };
+            scrollbarX.onmousedown = e => {
+                // console.log("mousedown scrollbarX:", e);
+                // 刷新一下变量，保证鼠标按下瞬间是最新的
+                offsetLeft =
+                    (this.scrollsliderXInfo.style.translateX / 100) *
+                    scrollsliderX.clientWidth;
+                offsetRight = offsetLeft + scrollsliderX.clientWidth;
+                maxScrollLeft =
+                    contentOuter.scrollWidth - contentOuter.clientWidth;
+
+                longPress = true;
+                // 按下200s时进入长按
+                setTimeout(() => {
+                    if (longPress) {
+                        // 增加一个类名，用于增加过渡动画
+                        scrollsliderX.classList.add("moveAnimation");
+                        moveTimer = setInterval(() => {
+                            if (inBar) {
+                                if (e.offsetX < offsetLeft) {
+                                    this.scrollsliderXInfo.style.translateX -= 5;
+                                }
+                                if (offsetRight < e.offsetX) {
+                                    this.scrollsliderXInfo.style.translateX += 5;
+                                }
+                                contentOuter.scrollLeft =
+                                    (this.scrollsliderXInfo.style.translateX /
+                                        100) *
+                                    contentOuter.clientWidth;
+                                if (contentOuter.scrollLeft <= 0) {
+                                    contentOuter.scrollLeft = 0;
+                                    clearInterval(moveTimer);
+                                }
+                                if (maxScrollLeft <= contentOuter.scrollLeft) {
+                                    contentOuter.scrollLeft = maxScrollLeft;
+                                    clearInterval(moveTimer);
+                                }
+                            }
+                        }, 50);
+                    }
+                }, 100);
+
+                // 拖动过程中禁止文本选中
+                document.onselectstart = () => false;
+                document.onmouseup = e => {
+                    // console.log("mouseup document:", e);
+                    if (!e.target.classList.contains("scrollC-scrollbarX")) {
+                        clearInterval(moveTimer);
+                        moveTimer = null;
+                    }
+                    document.onselectstart = null;
+                };
+            };
+            scrollbarX.onclick = e => {
+                // console.log("click scrollbarX:", e);
+                // 取消长按标识
+                longPress = false;
+                // 处于长按时不做操作
+                if (moveTimer) {
+                    clearInterval(moveTimer);
+                    moveTimer = null;
+                    // 定时滚动完成后移除过渡动画
+                    scrollsliderX.classList.remove("moveAnimation");
+                } else {
+                    if (e.offsetX < offsetLeft) {
+                        this.scrollsliderXInfo.style.translateX -= 80;
+                    }
+                    if (offsetRight < e.offsetX) {
+                        this.scrollsliderXInfo.style.translateX += 80;
+                    }
+                    contentOuter.scrollLeft =
+                        (this.scrollsliderXInfo.style.translateX / 100) *
+                        contentOuter.clientWidth;
+                }
+            };
+        },
         /**
          * @description: 监听鼠标进入总容器
          * @param {Event} e 事件
@@ -314,6 +434,7 @@ export default {
         enterScrollC(e) {
             // 显示滚动条
             this.$refs.scrollbarY.style.opacity = 1;
+            this.$refs.scrollbarX.style.opacity = 1;
         },
         /**
          * @description: 监听鼠标离开总容器
@@ -322,6 +443,7 @@ export default {
         leaveScrollC(e) {
             // 隐藏滚动条
             this.$refs.scrollbarY.style.opacity = 0;
+            this.$refs.scrollbarX.style.opacity = 0;
         },
         /**
          * @description: 监听外容器滚动
@@ -344,6 +466,16 @@ export default {
             scrollsliderY.style["-o-transform"] = value;
             scrollsliderY.style["transform"] = value;
             this.$forceUpdate();
+        },
+        "scrollsliderXInfo.style.translateX"(val) {
+            const scrollsliderX = this.$refs.scrollsliderX;
+            let value = `translateX(${val}%)`;
+            scrollsliderX.style["-webkit-transform"] = value;
+            scrollsliderX.style["-ms-transform"] = value;
+            scrollsliderX.style["-moz-transform"] = value;
+            scrollsliderX.style["-o-transform"] = value;
+            scrollsliderX.style["transform"] = value;
+            this.$forceUpdate();
         }
     }
 };
@@ -355,33 +487,50 @@ export default {
     overflow: hidden;
 }
 .scrollC-scrollbarY,
-.scrollC-scrollbarY:hover {
+.scrollC-scrollbarY:hover,
+.scrollC-scrollbarX,
+.scrollC-scrollbarX:hover {
     -webkit-transition: opacity 0.5s linear;
     -moz-transition: opacity 0.5s linear;
     -o-transition: opacity 0.5s linear;
     transition: opacity 0.5s linear;
 }
-.scrollC-scrollbarY {
+.scrollC-scrollbarY,
+.scrollC-scrollbarX {
     position: absolute;
-    right: 0;
-    width: 10px;
-    height: 100%;
     background-color: #eee;
     border-radius: 10px;
     opacity: 0;
+}
+.scrollbarY-slider,
+.scrollbarX-slider {
+    background-color: #aaa;
+    border-radius: 10px;
+    &:hover {
+        background-color: #888;
+    }
+    &.moveAnimation {
+        -webkit-transition: transform 0.05s linear;
+        -moz-transition: transform 0.05s linear;
+        -o-transition: transform 0.05s linear;
+        transition: transform 0.05s linear;
+    }
+}
+.scrollC-scrollbarY {
+    right: 0;
+    width: 10px;
+    height: 100%;
     .scrollbarY-slider {
         width: 10px;
-        background-color: #aaa;
-        border-radius: 10px;
-        &:hover {
-            background-color: #888;
-        }
-        &.moveAnimation {
-            -webkit-transition: transform 0.05s linear;
-            -moz-transition: transform 0.05s linear;
-            -o-transition: transform 0.05s linear;
-            transition: transform 0.05s linear;
-        }
+    }
+}
+.scrollC-scrollbarX {
+    bottom: 0;
+    left: 0;
+    width: calc(100% - 10px);
+    height: 10px;
+    .scrollbarX-slider {
+        height: 10px;
     }
 }
 .scrollC-contentOuter {

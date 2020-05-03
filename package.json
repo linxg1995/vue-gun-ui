@@ -1,38 +1,36 @@
 {
-    "name": "vue-gun-ui",
-    "version": "0.0.4",
-    "description": "vue-gun-ui，基于vue设计的UI组件库",
-    "main": "lib/vue-gun-ui.umd.min.js",
-    "keywords": [
-        "vue-gun-ui",
-        "gun-ui",
-        "vue-gun",
-        "linxg1995"
-    ],
-    "author": "linxg",
-    "private": false,
-    "license": "MIT",
-    "scripts": {
-        "serve": "vue-cli-service serve",
-        "build": "vue-cli-service build",
-        "lint": "vue-cli-service lint",
-        "lib": "vue-cli-service build --target lib --name vue-gun-ui --dest lib src/components/index.js"
-    },
-    "dependencies": {
-        "core-js": "^3.6.4",
-        "vue": "^2.6.11",
-        "vue-router": "^3.1.6"
-    },
-    "devDependencies": {
-        "@vue/cli-plugin-babel": "~4.3.0",
-        "@vue/cli-plugin-eslint": "~4.3.0",
-        "@vue/cli-plugin-router": "~4.3.0",
-        "@vue/cli-service": "~4.3.0",
-        "babel-eslint": "^10.1.0",
-        "eslint": "^6.7.2",
-        "eslint-plugin-vue": "^6.2.2",
-        "node-sass": "^4.14.0",
-        "sass-loader": "^8.0.2",
-        "vue-template-compiler": "^2.6.11"
-    }
+  "name": "vue-gun-ui",
+  "version": "0.0.4",
+  "description": "vue-gun-ui，基于vue设计的UI组件库",
+  "main": "lib/vue-gun-ui.umd.min.js",
+  "keywords": [
+    "vue-gun-ui",
+    "gun-ui",
+    "vue-gun",
+    "linxg1995"
+  ],
+  "author": "linxg",
+  "private": false,
+  "license": "MIT",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "lib": "vue-cli-service build --target lib --name vue-gun-ui --dest lib src/components/index.js"
+  },
+  "dependencies": {
+    "core-js": "^3.6.4",
+    "vue": "^2.6.11"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.3.0",
+    "@vue/cli-plugin-eslint": "~4.3.0",
+    "@vue/cli-service": "~4.3.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^6.2.2",
+    "node-sass": "^4.14.0",
+    "sass-loader": "^8.0.2",
+    "vue-template-compiler": "^2.6.11"
+  }
 }

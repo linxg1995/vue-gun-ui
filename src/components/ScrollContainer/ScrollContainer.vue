@@ -2,7 +2,7 @@
  * @Description: 带自定义滚动条的块容器
  * @Author: LXG
  * @Date: 2020-04-21
- * @LastEditTime: 2020-05-02
+ * @LastEditTime: 2020-05-03
  -->
 <template>
     <div class="gun-scrollC" ref="scrollC" @mouseenter="enterScrollC" @mouseleave="leaveScrollC">
@@ -30,7 +30,7 @@ export default {
         // 显示X滚动条
         showX: {
             type: Boolean,
-            default: true
+            default: false
         }
     },
     data() {
@@ -68,6 +68,7 @@ export default {
             // ----- 隐藏默认滚动条 -----
             // 总容器 隐藏溢出，外容器 显示滚动条
             // 计算滚动条宽度，调整外容器大小，使滚动条部分刚好溢出
+            // 调整内容器大小，使YX滚动条不重叠
             //     offsetWidth 包含滚动条的整宽
             //     clientWidth 不包含混动条的可视宽
             var defaultScrollbarWidth =
@@ -75,6 +76,7 @@ export default {
             contentOuter.style.marginRight = `-${defaultScrollbarWidth}px`;
             contentOuter.style.paddingRight = `${defaultScrollbarWidth}px`;
             contentOuter.style.height = `calc(100% + ${defaultScrollbarWidth}px)`;
+            contentInner.style.marginRight = `-${defaultScrollbarWidth - 10}px`;
 
             // ----- 按比例初始化滚动条滑块的大小 -----
             // 有两种算法
@@ -82,12 +84,12 @@ export default {
             //     滑块/100 = 外容器可视窗口/外容器内容窗口，得到%
             scrollsliderY.style.height = `${contentOuter.clientHeight *
                 (contentOuter.clientHeight / contentOuter.scrollHeight)}px`;
-            scrollsliderX.style.width = `${contentOuter.clientWidth *
+            scrollsliderX.style.width = `${(contentOuter.clientWidth - 10) *
                 (contentOuter.clientWidth / contentOuter.scrollWidth)}px`;
             // scrollsliderY.style.height = `${(contentOuter.clientHeight /
             //     contentOuter.scrollHeight) *
             //     100}%`;
-            // scrollsliderY.style.width = `${(contentOuter.clientWidth /
+            // scrollsliderX.style.width = `${(contentOuter.clientWidth /
             //     contentOuter.scrollWidth) *
             //     100}%`;
 
@@ -97,6 +99,7 @@ export default {
                 this.initSliderYHandler();
 
                 this.initBarXHandler();
+                this.initSliderXHandler();
             });
 
             // ----- 监听内容器窗口 -----
@@ -116,8 +119,15 @@ export default {
                         scrollsliderY.style.height = `${contentOuter.clientHeight *
                             (contentOuter.clientHeight /
                                 contentOuter.scrollHeight)}px`;
+                        scrollsliderX.style.width = `${(contentOuter.clientWidth -
+                            10) *
+                            (contentOuter.clientWidth /
+                                contentOuter.scrollWidth)}px`;
                         // scrollsliderY.style.height = `${(contentOuter.clientHeight /
                         //     contentOuter.scrollHeight) *
+                        //     100}%`;
+                        // scrollsliderX.style.width = `${(contentOuter.clientWidth /
+                        //     contentOuter.scrollWidth) *
                         //     100}%`;
                     }
                 });
@@ -236,6 +246,7 @@ export default {
             // currentTranslateY 当前Y偏移量
             // arriveTop 滚动到达顶部
             // arriveBottom 滚动到达底部
+            // maxScrollTop 最大滚动高度
             let currentClientY = 0,
                 currentTranslateY = 0,
                 arriveTop = false,
@@ -428,6 +439,108 @@ export default {
             };
         },
         /**
+         * @description: 初始化X滚动条滑块的监听
+         */
+        initSliderXHandler() {
+            const ds = this;
+            const scrollsliderX = this.$refs.scrollsliderX;
+            const contentOuter = this.$refs.contentOuter;
+            // currentClientX 当前X位置
+            // currentTranslateX 当前X偏移量
+            // arriveLeft 滚动到达左部
+            // arriveRight 滚动到达右部
+            // maxScrollLeft 最大滚动宽度
+            let currentClientX = 0,
+                currentTranslateX = 0,
+                arriveLeft = false,
+                arriveRight = false,
+                maxScrollLeft = 0;
+
+            scrollsliderX.onmousedown = e => {
+                // console.log("mousedown scrollsliderX:", e);
+                // scrollbarX的mousedown事件会被捕获，阻止默认
+                e.stopPropagation();
+                e.cancelBubble = true;
+
+                // 限制左键
+                if (e.button != 0) {
+                    return;
+                }
+                // 刷新一下变量，保证鼠标按下瞬间是最新的
+                currentClientX = e.clientX;
+                currentTranslateX = ds.scrollsliderXInfo.style.translateX;
+                maxScrollLeft =
+                    contentOuter.scrollWidth - contentOuter.clientWidth;
+                // 希望鼠标离开滑块还能继续拖动，所以注册dom的mousemove
+                document.addEventListener(
+                    "mousemove",
+                    moveScrollsliderX,
+                    false
+                );
+                // 拖动过程中禁止文本选中
+                document.onselectstart = () => false;
+                document.onmouseup = e => {
+                    document.removeEventListener(
+                        "mousemove",
+                        moveScrollsliderX
+                    );
+                    document.onselectstart = null;
+                    document.onmouseup = null;
+                };
+            };
+            scrollsliderX.onmouseup = e => {
+                // console.log("mouseup scrollsliderX:", e);
+                // scrollbarX的mouseup事件会被捕获，阻止默认
+                e.stopPropagation();
+                e.cancelBubble = true;
+
+                document.removeEventListener("mousemove", moveScrollsliderX);
+            };
+            scrollsliderX.onclick = e => {
+                // console.log("click scrollsliderX:", e);
+                // scrollbarX的click事件会被捕获，阻止默认
+                e.stopPropagation();
+                e.cancelBubble = true;
+            };
+
+            /**
+             * @description: 拖动X滚动条滑块
+             * @param {Event} e 事件
+             */
+            function moveScrollsliderX(e) {
+                // console.log("move scrollsliderX:", e);
+                // 按移动的比例距离，设置滑块的X偏移量
+                let offsetX = e.clientX - currentClientX;
+                if (offsetX < 0 && contentOuter.scrollLeft <= 0) {
+                    if (!arriveLeft) {
+                        currentClientX = e.clientX;
+                        currentTranslateX = 0;
+                        arriveLeft = true;
+                    }
+                    return;
+                } else {
+                    arriveLeft = false;
+                }
+                if (offsetX > 0 && maxScrollLeft <= contentOuter.scrollLeft) {
+                    if (!arriveRight) {
+                        currentClientX = e.clientX;
+                        currentTranslateX =
+                            ds.scrollsliderXInfo.style.translateX;
+                        arriveRight = true;
+                    }
+                    return;
+                } else {
+                    arriveRight = false;
+                }
+                ds.scrollsliderXInfo.style.translateX =
+                    currentTranslateX +
+                    (offsetX / scrollsliderX.clientWidth) * 100;
+                contentOuter.scrollLeft =
+                    (ds.scrollsliderXInfo.style.translateX / 100) *
+                    contentOuter.clientWidth;
+            }
+        },
+        /**
          * @description: 监听鼠标进入总容器
          * @param {Event} e 事件
          */
@@ -454,6 +567,9 @@ export default {
             // 按比例偏移 滚动条滑块
             this.scrollsliderYInfo.style.translateY =
                 (e.target.scrollTop / e.target.clientHeight) * 100;
+            this.scrollsliderXInfo.style.translateX =
+                (e.target.scrollLeft / e.target.clientWidth) * 100;
+            this.$emit("scroll", e);
         }
     },
     watch: {

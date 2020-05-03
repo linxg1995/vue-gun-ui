@@ -7,7 +7,7 @@
         <!-- </div> -->
         <!-- <router-view /> -->
         <h3>ScrollContainer</h3>
-        <gun-scroll-container style="width: 400px;height: 200px;margin:0 auto;">
+        <gun-scroll-container style="width: 300px;height: 200px;margin:0 auto;" showX>
             <div style="width: 500px">
                 <p
                     class="white-space: nowrap;"

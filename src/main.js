@@ -9,6 +9,8 @@ Vue.config.productionTip = false
 
 Vue.use(vuegunui)
 
+Vue.prototype.GunUtils = vuegunui.GunUtils
+
 new Vue({
     // router,
     // store,

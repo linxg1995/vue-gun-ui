@@ -27,7 +27,8 @@ export default {
                 list: new Array(20)
             }
         };
-    }
+    },
+    mounted() {}
 };
 </script>
 

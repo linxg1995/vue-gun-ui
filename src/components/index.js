@@ -2,9 +2,10 @@
  * @Description: 组件全局管理
  * @Author: LXG
  * @Date: 2020-04-21
- * @LastEditTime: 2020-04-22
+ * @LastEditTime: 2020-05-14
  */
-import ScrollContainer from './ScrollContainer/index.js'
+import ScrollContainer from './scrollContainer/index.js'
+import GunUtils from '@/assets/js/utils.js'
 
 const components = [
     ScrollContainer
@@ -26,5 +27,6 @@ if (typeof window !== 'undefined' && window.Vue) {
 
 export default {
     install,
-    ...components
+    ...components,
+    GunUtils
 }

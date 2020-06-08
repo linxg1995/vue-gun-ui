@@ -1,8 +1,8 @@
 /*
- * @Description: 工具类方法管理
+ * @Description: 工具类函数管理
  * @Author: LXG
  * @Date: 2020-05-14
- * @LastEditTime: 2020-05-14
+ * @LastEditTime: 2020-06-08
  */
 export default {
     /**
@@ -38,7 +38,7 @@ export default {
             case 'number':
                 return (!isNaN(targ))
             case 'array':
-                return (targ.length)
+                return (targ.length ? true : false)
             case 'object':
                 return (JSON.stringify(targ) !== '{}')
             default:
@@ -72,5 +72,17 @@ export default {
 
         // console.log("uuid:", uuid)
         return uuid
+    },
+    /**
+     * @description: 对象可选链操作
+     * @param {Object} sourceObj 源对象
+     * @param {Array} propQueue 属性队列
+     */
+    optChain(sourceObj, propQueue = []) {
+        let val = sourceObj || undefined
+        for (let i = 0; i < propQueue.length; i++) {
+            val = val?.[propQueue[i]]
+        }
+        return val
     }
 }

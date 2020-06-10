@@ -2,13 +2,15 @@
  * @Description: 组件全局管理
  * @Author: LXG
  * @Date: 2020-04-21
- * @LastEditTime: 2020-05-14
+ * @LastEditTime: 2020-06-10
  */
 import ScrollContainer from './scrollContainer/index.js'
+import Select from './select/index.js'
 import GunUtils from '@/assets/js/utils.js'
 
 const components = [
-    ScrollContainer
+    ScrollContainer,
+    Select
 ]
 
 const install = Vue => {

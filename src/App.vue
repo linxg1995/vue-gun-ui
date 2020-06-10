@@ -6,6 +6,8 @@
         <!-- <router-link to="/about">About</router-link> -->
         <!-- </div> -->
         <!-- <router-view /> -->
+
+        <!-- ScrollContainer -->
         <h3>ScrollContainer</h3>
         <gun-scroll-container style="width: 300px;height: 200px;margin:0 auto;" showX>
             <div style="width: 500px">
@@ -16,6 +18,10 @@
                 >测试ScrollContainer,测试ScrollContainer,测试ScrollContainer,{{index}}</p>
             </div>
         </gun-scroll-container>
+        <hr />
+        <!-- Select -->
+        <h3>Select</h3>
+        <gun-select style="margin:0 auto;" v-model="select.value"></gun-select>
     </div>
 </template>
 
@@ -25,6 +31,9 @@ export default {
         return {
             scrollContainer: {
                 list: new Array(20)
+            },
+            select: {
+                value: "测试value"
             }
         };
     },
@@ -33,6 +42,11 @@ export default {
 </script>
 
 <style lang="scss">
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
 body {
     min-width: 1024px;
 }

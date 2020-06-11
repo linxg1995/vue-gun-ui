@@ -21,7 +21,9 @@
         <hr />
         <!-- Select -->
         <h3>Select</h3>
-        <gun-select style="margin:0 auto;" v-model="select.value"></gun-select>
+        <gun-select style="margin:0 auto;" v-model="select.value" :options="select.options">
+            <!-- <gun-option></gun-option> -->
+        </gun-select>
     </div>
 </template>
 
@@ -33,7 +35,49 @@ export default {
                 list: new Array(20)
             },
             select: {
-                value: "测试value"
+                value: "value0",
+                options: [
+                    {
+                        value: "value0",
+                        label: "蜜汁凤爪"
+                    },
+                    {
+                        value: "value1",
+                        label: "水晶虾饺"
+                    },
+                    {
+                        value: "value2",
+                        label: "叉烧布拉肠"
+                    },
+                    {
+                        value: "value3",
+                        label: "荷叶糯米鸡"
+                    },
+                    {
+                        value: "value3",
+                        label: "黄金流沙包"
+                    },
+                    {
+                        value: "value0",
+                        label: "蜜汁凤爪"
+                    },
+                    {
+                        value: "value1",
+                        label: "水晶虾饺"
+                    },
+                    {
+                        value: "value2",
+                        label: "叉烧布拉肠"
+                    },
+                    {
+                        value: "value3",
+                        label: "荷叶糯米鸡"
+                    },
+                    {
+                        value: "value3",
+                        label: "黄金流沙包"
+                    }
+                ]
             }
         };
     },

@@ -21,7 +21,13 @@
         <hr />
         <!-- Select -->
         <h3>Select</h3>
-        <gun-select style="margin:0 auto;" v-model="select.value" :options="select.options">
+        <gun-select
+            style="margin:0 auto;"
+            v-model="select.value"
+            :options="select.options"
+            @toggle="toggleSelect"
+            @change="changeSelect"
+        >
             <!-- <gun-option></gun-option> -->
         </gun-select>
     </div>
@@ -39,49 +45,47 @@ export default {
                 options: [
                     {
                         value: "value0",
-                        label: "蜜汁凤爪"
+                        label: "蜜汁凤爪",
+                        price: 12
                     },
                     {
                         value: "value1",
-                        label: "水晶虾饺"
+                        label: "水晶虾饺",
+                        price: 14
                     },
                     {
                         value: "value2",
-                        label: "叉烧布拉肠"
+                        label: "叉烧布拉肠",
+                        price: 10
                     },
                     {
                         value: "value3",
-                        label: "荷叶糯米鸡"
+                        label: "荷叶糯米鸡",
+                        price: 7.5
                     },
                     {
-                        value: "value3",
-                        label: "黄金流沙包"
+                        value: "value4",
+                        label: "黄金流沙包",
+                        price: 5
                     },
                     {
-                        value: "value0",
-                        label: "蜜汁凤爪"
-                    },
-                    {
-                        value: "value1",
-                        label: "水晶虾饺"
-                    },
-                    {
-                        value: "value2",
-                        label: "叉烧布拉肠"
-                    },
-                    {
-                        value: "value3",
-                        label: "荷叶糯米鸡"
-                    },
-                    {
-                        value: "value3",
-                        label: "黄金流沙包"
+                        value: "value5",
+                        label: "三丝炒米粉",
+                        price: 10
                     }
                 ]
             }
         };
     },
-    mounted() {}
+    mounted() {},
+    methods: {
+        toggleSelect(val) {
+            // console.log("toggleSelect:", val);
+        },
+        changeSelect(val, info) {
+            // console.log("changeSelect:", val, info);
+        }
+    }
 };
 </script>
 

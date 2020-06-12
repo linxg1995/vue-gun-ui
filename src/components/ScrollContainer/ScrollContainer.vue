@@ -2,7 +2,7 @@
  * @Description: 带自定义滚动条的块容器
  * @Author: LXG
  * @Date: 2020-04-21
- * @LastEditTime: 2020-05-03
+ * @LastEditTime: 2020-06-12
  -->
 <template>
     <div class="gun-scrollC" ref="scrollC" @mouseenter="enterScrollC" @mouseleave="leaveScrollC">
@@ -57,7 +57,7 @@ export default {
          * @description: 渲染后初始化
          */
         initMount() {
-            // const scrollC = this.$refs.scrollC;
+            const scrollC = this.$refs.scrollC;
             // const scrollbarY = this.$refs.scrollbarY;
             const scrollsliderY = this.$refs.scrollsliderY;
             // const scrollbarX = this.$refs.scrollbarX;
@@ -79,19 +79,7 @@ export default {
             contentInner.style.marginRight = `-${defaultScrollbarWidth - 10}px`;
 
             // ----- 按比例初始化滚动条滑块的大小 -----
-            // 有两种算法
-            //     滑块/滚动条 = 外容器可视窗口/外容器内容窗口，得到px
-            //     滑块/100 = 外容器可视窗口/外容器内容窗口，得到%
-            scrollsliderY.style.height = `${contentOuter.clientHeight *
-                (contentOuter.clientHeight / contentOuter.scrollHeight)}px`;
-            scrollsliderX.style.width = `${(contentOuter.clientWidth - 10) *
-                (contentOuter.clientWidth / contentOuter.scrollWidth)}px`;
-            // scrollsliderY.style.height = `${(contentOuter.clientHeight /
-            //     contentOuter.scrollHeight) *
-            //     100}%`;
-            // scrollsliderX.style.width = `${(contentOuter.clientWidth /
-            //     contentOuter.scrollWidth) *
-            //     100}%`;
+            this.initScrollslider();
 
             // ----- 监听滚动条及滑块 -----
             this.$nextTick(() => {
@@ -116,19 +104,7 @@ export default {
                         )
                     ) {
                         // 按比例重绘滚动条滑块的大小
-                        scrollsliderY.style.height = `${contentOuter.clientHeight *
-                            (contentOuter.clientHeight /
-                                contentOuter.scrollHeight)}px`;
-                        scrollsliderX.style.width = `${(contentOuter.clientWidth -
-                            10) *
-                            (contentOuter.clientWidth /
-                                contentOuter.scrollWidth)}px`;
-                        // scrollsliderY.style.height = `${(contentOuter.clientHeight /
-                        //     contentOuter.scrollHeight) *
-                        //     100}%`;
-                        // scrollsliderX.style.width = `${(contentOuter.clientWidth /
-                        //     contentOuter.scrollWidth) *
-                        //     100}%`;
+                        this.initScrollslider();
                     }
                 });
             });
@@ -570,6 +546,40 @@ export default {
             this.scrollsliderXInfo.style.translateX =
                 (e.target.scrollLeft / e.target.clientWidth) * 100;
             this.$emit("scroll", e);
+        },
+        /**
+         * @description: 初始化容器
+         */
+        resetContentOuter() {
+            const scrollC = this.$refs.scrollC;
+            const contentOuter = this.$refs.contentOuter;
+
+            var defaultScrollbarWidth =
+                contentOuter.offsetWidth - contentOuter.clientWidth;
+            contentOuter.style.height = `${scrollC.clientHeight +
+                defaultScrollbarWidth}px`;
+        },
+        /**
+         * @description: 初始化滚动条及滑块
+         */
+        initScrollslider() {
+            const scrollsliderY = this.$refs.scrollsliderY;
+            const scrollsliderX = this.$refs.scrollsliderX;
+            const contentOuter = this.$refs.contentOuter;
+
+            // 有两种算法
+            //     滑块/滚动条 = 外容器可视窗口/外容器内容窗口，得到px
+            //     滑块/100 = 外容器可视窗口/外容器内容窗口，得到%
+            scrollsliderY.style.height = `${contentOuter.clientHeight *
+                (contentOuter.clientHeight / contentOuter.scrollHeight)}px`;
+            scrollsliderX.style.width = `${(contentOuter.clientWidth - 10) *
+                (contentOuter.clientWidth / contentOuter.scrollWidth)}px`;
+            // scrollsliderY.style.height = `${(contentOuter.clientHeight /
+            //     contentOuter.scrollHeight) *
+            //     100}%`;
+            // scrollsliderX.style.width = `${(contentOuter.clientWidth /
+            //     contentOuter.scrollWidth) *
+            //     100}%`;
         }
     },
     watch: {

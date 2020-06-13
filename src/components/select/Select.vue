@@ -2,7 +2,7 @@
  * @Description: 带自定义滚动条的块容器
  * @Author: LXG
  * @Date: 2020-04-21
- * @LastEditTime: 2020-06-12
+ * @LastEditTime: 2020-06-14
  -->
 <template>
     <div class="gun-select" ref="gunSelect">
@@ -15,22 +15,34 @@
             readonly
             @click.stop="toggle()"
         />
-        <transition>
-            <div class="select-menu" ref="selectMenu" v-show="menuShow">
-                <div class="select-menu-arrow"></div>
-                <div class="select-menu-options" ref="menuOptions">
-                    <div
-                        class="menu-options-item"
-                        :class="{'opt--current': getcurrentOptClass(opt)}"
-                        v-for="(opt, index) in tempOptions"
-                        :key="index"
-                        @click="clickOpt(opt,index)"
-                    >
-                        <span>{{getOptLabel(opt)}}</span>
-                    </div>
+        <div class="select-menu" ref="selectMenu" v-show="menuShow">
+            <div class="select-menu-arrow"></div>
+            <gun-scroll-container class="select-menu-options">
+                <div
+                    class="menu-options-item"
+                    :class="{'opt--current': getcurrentOptClass(opt)}"
+                    v-for="(opt, index) in tempOptions"
+                    :key="index"
+                    @click="clickOpt(opt,index)"
+                >
+                    <span>{{getOptLabel(opt)}}</span>
+                </div>
+            </gun-scroll-container>
+        </div>
+        <!-- <div class="select-menu" ref="selectMenu" v-show="menuShow">
+            <div class="select-menu-arrow"></div>
+            <div class="select-menu-options" ref="menuOptions">
+                <div
+                    class="menu-options-item"
+                    :class="{'opt--current': getcurrentOptClass(opt)}"
+                    v-for="(opt, index) in tempOptions"
+                    :key="index"
+                    @click="clickOpt(opt,index)"
+                >
+                    <span>{{getOptLabel(opt)}}</span>
                 </div>
             </div>
-        </transition>
+        </div>-->
     </div>
 </template>
 
@@ -135,31 +147,17 @@ export default {
          * @description: 切换菜单显示
          */
         toggle() {
+            // 为了兼容 v-show 和 css动画，加入延迟来处理
             if (!this.menuShow) {
-                this.$refs["selectInput"].focus();
                 setTimeout(() => {
                     this.$refs["gunSelect"].classList.add("sel--focus");
                 }, 100);
                 this.menuShow = !this.menuShow;
-                this.$nextTick(() => {
-                    this.$emit("toggle", this.menuShow);
-                });
-                document.addEventListener("click", this.toggle, false);
-                // 调用scrollC内部方法，重置 容器&&滚动条 的大小
-                // setTimeout(() => {
-                //     this.$refs["menuOptions"].resetContentOuter();
-                //     this.$refs["menuOptions"].initScrollslider();
-                // }, 200);
             } else {
-                this.$refs["selectInput"].blur();
                 setTimeout(() => {
                     this.menuShow = !this.menuShow;
-                    this.$nextTick(() => {
-                        this.$emit("toggle", this.menuShow);
-                    });
                 }, 100);
                 this.$refs["gunSelect"].classList.remove("sel--focus");
-                document.removeEventListener("click", this.toggle);
             }
         }
     },
@@ -172,6 +170,18 @@ export default {
         },
         options(val) {
             this.tempOptions = val || [];
+        },
+        menuShow(val) {
+            if (val) {
+                this.$refs["selectInput"].focus();
+                document.addEventListener("click", this.toggle, false);
+            } else {
+                this.$refs["selectInput"].blur();
+                document.removeEventListener("click", this.toggle);
+            }
+            this.$nextTick(() => {
+                this.$emit("toggle", val);
+            });
         }
     }
 };
@@ -185,10 +195,10 @@ export default {
     font-size: 14px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    -webkit-transition: all 0.2s linear;
-    -moz-transition: all 0.2s linear;
-    -o-transition: all 0.2s linear;
-    transition: all 0.2s linear;
+    -webkit-transition: all 0.1s linear;
+    -moz-transition: all 0.1s linear;
+    -o-transition: all 0.1s linear;
+    transition: all 0.1s linear;
     &:hover {
         border-color: #bbb;
     }
@@ -200,7 +210,7 @@ export default {
             opacity: 1;
         }
         .select-menu-options {
-            // max-height: 200px;
+            max-height: 200px;
         }
     }
 }
@@ -208,6 +218,7 @@ export default {
     width: 100%;
     height: 32px;
     line-height: 32px;
+    padding-right: 10px;
     padding-left: 10px;
     color: #444;
     background: none;
@@ -256,8 +267,7 @@ export default {
     }
 }
 .select-menu-options {
-    // max-height: 0;
-    overflow-y: auto;
+    max-height: 0;
     -webkit-transition: all 0.1s linear;
     -moz-transition: all 0.1s linear;
     -o-transition: all 0.1s linear;

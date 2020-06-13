@@ -2,7 +2,7 @@
  * @Description: 带自定义滚动条的块容器
  * @Author: LXG
  * @Date: 2020-04-21
- * @LastEditTime: 2020-06-12
+ * @LastEditTime: 2020-06-14
  -->
 <template>
     <div class="gun-scrollC" ref="scrollC" @mouseenter="enterScrollC" @mouseleave="leaveScrollC">
@@ -59,24 +59,14 @@ export default {
         initMount() {
             const scrollC = this.$refs.scrollC;
             // const scrollbarY = this.$refs.scrollbarY;
-            const scrollsliderY = this.$refs.scrollsliderY;
+            // const scrollsliderY = this.$refs.scrollsliderY;
             // const scrollbarX = this.$refs.scrollbarX;
-            const scrollsliderX = this.$refs.scrollsliderX;
-            const contentOuter = this.$refs.contentOuter;
+            // const scrollsliderX = this.$refs.scrollsliderX;
+            // const contentOuter = this.$refs.contentOuter;
             const contentInner = this.$refs.contentInner;
 
             // ----- 隐藏默认滚动条 -----
-            // 总容器 隐藏溢出，外容器 显示滚动条
-            // 计算滚动条宽度，调整外容器大小，使滚动条部分刚好溢出
-            // 调整内容器大小，使YX滚动条不重叠
-            //     offsetWidth 包含滚动条的整宽
-            //     clientWidth 不包含混动条的可视宽
-            var defaultScrollbarWidth =
-                contentOuter.offsetWidth - contentOuter.clientWidth;
-            contentOuter.style.marginRight = `-${defaultScrollbarWidth}px`;
-            contentOuter.style.paddingRight = `${defaultScrollbarWidth}px`;
-            contentOuter.style.height = `calc(100% + ${defaultScrollbarWidth}px)`;
-            contentInner.style.marginRight = `-${defaultScrollbarWidth - 10}px`;
+            this.initContainer();
 
             // ----- 按比例初始化滚动条滑块的大小 -----
             this.initScrollslider();
@@ -94,21 +84,34 @@ export default {
             // ResizeObserver是新的JS API，支持观察某个元素的窗口变化
             //     .target dom元素
             //     .contentRect dom元素大小位置信息
-            const myObserver = new ResizeObserver(entries => {
+            const scrollCObserver = new ResizeObserver(entries => {
                 entries.forEach(entry => {
                     // console.log("observer entry:", entry);
                     // element.classList.contains(<className>) 是否存在某个类名
-                    if (
-                        entry.target.classList.contains(
-                            "contentOuter-contentInner"
-                        )
-                    ) {
+                    if (entry.target.classList.contains("gun-scrollC")) {
+                        // 重置容器大小
+                        this.initContainer();
                         // 按比例重绘滚动条滑块的大小
                         this.initScrollslider();
                     }
                 });
             });
-            myObserver.observe(contentInner);
+            // const innerObserver = new ResizeObserver(entries => {
+            //     entries.forEach(entry => {
+            //         // console.log("observer entry:", entry);
+            //         // element.classList.contains(<className>) 是否存在某个类名
+            //         if (
+            //             entry.target.classList.contains(
+            //                 "contentOuter-contentInner"
+            //             )
+            //         ) {
+            //             // 按比例重绘滚动条滑块的大小
+            //             this.initScrollslider();
+            //         }
+            //     });
+            // });
+            scrollCObserver.observe(scrollC);
+            // innerObserver.observe(contentInner);
         },
         /**
          * @description: 注册Y滚动条的监听
@@ -522,8 +525,11 @@ export default {
          */
         enterScrollC(e) {
             // 显示滚动条
-            this.$refs.scrollbarY.style.opacity = 1;
-            this.$refs.scrollbarX.style.opacity = 1;
+            const contentOuter = this.$refs.contentOuter;
+            if (contentOuter.clientHeight < contentOuter.scrollHeight) {
+                this.$refs.scrollbarY.style.opacity = 1;
+                this.$refs.scrollbarX.style.opacity = 1;
+            }
         },
         /**
          * @description: 监听鼠标离开总容器
@@ -548,19 +554,28 @@ export default {
             this.$emit("scroll", e);
         },
         /**
-         * @description: 初始化容器
+         * @description: 初始化容器大小
          */
-        resetContentOuter() {
+        initContainer() {
             const scrollC = this.$refs.scrollC;
             const contentOuter = this.$refs.contentOuter;
+            const contentInner = this.$refs.contentInner;
 
+            // 总容器 隐藏溢出，外容器 显示滚动条
+            // 计算滚动条宽度，调整外容器大小，使滚动条部分刚好溢出
+            // 调整内容器大小，使YX滚动条不重叠
+            //     offsetWidth 包含滚动条的整宽
+            //     clientWidth 不包含混动条的可视宽
             var defaultScrollbarWidth =
                 contentOuter.offsetWidth - contentOuter.clientWidth;
             contentOuter.style.height = `${scrollC.clientHeight +
                 defaultScrollbarWidth}px`;
+            // contentOuter.style.paddingRight = `${defaultScrollbarWidth}px`;
+            contentOuter.style.marginRight = `-${defaultScrollbarWidth}px`;
+            // contentInner.style.marginRight = `-${defaultScrollbarWidth - 10}px`;
         },
         /**
-         * @description: 初始化滚动条及滑块
+         * @description: 初始化滚动条滑块大小
          */
         initScrollslider() {
             const scrollsliderY = this.$refs.scrollsliderY;

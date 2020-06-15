@@ -2,7 +2,7 @@
  * @Description: 带自定义滚动条的块容器
  * @Author: LXG
  * @Date: 2020-04-21
- * @LastEditTime: 2020-06-14
+ * @LastEditTime: 2020-06-15
  -->
 <template>
     <div class="gun-select" ref="gunSelect">
@@ -142,17 +142,18 @@ export default {
                     index: index
                 });
             }
+            this.toggle();
         },
         /**
          * @description: 切换菜单显示
          */
-        toggle() {
+        toggle(e) {
             // 为了兼容 v-show 和 css动画，加入延迟来处理
             if (!this.menuShow) {
+                this.menuShow = !this.menuShow;
                 setTimeout(() => {
                     this.$refs["gunSelect"].classList.add("sel--focus");
-                }, 100);
-                this.menuShow = !this.menuShow;
+                });
             } else {
                 setTimeout(() => {
                     this.menuShow = !this.menuShow;
@@ -175,6 +176,9 @@ export default {
             if (val) {
                 this.$refs["selectInput"].focus();
                 document.addEventListener("click", this.toggle, false);
+                this.$refs["selectMenu"].onclick = function(e) {
+                    e.stopPropagation();
+                };
             } else {
                 this.$refs["selectInput"].blur();
                 document.removeEventListener("click", this.toggle);
@@ -210,7 +214,7 @@ export default {
             opacity: 1;
         }
         .select-menu-options {
-            max-height: 200px;
+            // max-height: 200px;
         }
     }
 }
@@ -267,7 +271,7 @@ export default {
     }
 }
 .select-menu-options {
-    max-height: 0;
+    max-height: 200px;
     -webkit-transition: all 0.1s linear;
     -moz-transition: all 0.1s linear;
     -o-transition: all 0.1s linear;

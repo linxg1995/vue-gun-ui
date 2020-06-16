@@ -2,7 +2,7 @@
  * @Description: 带自定义滚动条的块容器
  * @Author: LXG
  * @Date: 2020-04-21
- * @LastEditTime: 2020-06-14
+ * @LastEditTime: 2020-06-16
  -->
 <template>
     <div class="gun-scrollC" ref="scrollC" @mouseenter="enterScrollC" @mouseleave="leaveScrollC">
@@ -63,7 +63,7 @@ export default {
             // const scrollbarX = this.$refs.scrollbarX;
             // const scrollsliderX = this.$refs.scrollsliderX;
             // const contentOuter = this.$refs.contentOuter;
-            const contentInner = this.$refs.contentInner;
+            // const contentInner = this.$refs.contentInner;
 
             // ----- 隐藏默认滚动条 -----
             this.initContainer();
@@ -133,10 +133,10 @@ export default {
                 longPress = false,
                 moveTimer = null;
 
-            scrollbarY.onmouseenter = e => {
+            scrollbarY.onmouseenter = function() {
                 inBar = true;
             };
-            scrollbarY.onmouseleave = e => {
+            scrollbarY.onmouseleave = function() {
                 inBar = false;
             };
             scrollbarY.onmousedown = e => {
@@ -255,7 +255,7 @@ export default {
                 );
                 // 拖动过程中禁止文本选中
                 document.onselectstart = () => false;
-                document.onmouseup = e => {
+                document.onmouseup = function() {
                     document.removeEventListener(
                         "mousemove",
                         movescrollsliderY
@@ -336,10 +336,10 @@ export default {
                 longPress = false,
                 moveTimer = null;
 
-            scrollbarX.onmouseenter = e => {
+            scrollbarX.onmouseenter = function() {
                 inBar = true;
             };
-            scrollbarX.onmouseleave = e => {
+            scrollbarX.onmouseleave = function() {
                 inBar = false;
             };
             scrollbarX.onmousedown = e => {
@@ -458,7 +458,7 @@ export default {
                 );
                 // 拖动过程中禁止文本选中
                 document.onselectstart = () => false;
-                document.onmouseup = e => {
+                document.onmouseup = function() {
                     document.removeEventListener(
                         "mousemove",
                         moveScrollsliderX
@@ -559,7 +559,7 @@ export default {
         initContainer() {
             const scrollC = this.$refs.scrollC;
             const contentOuter = this.$refs.contentOuter;
-            const contentInner = this.$refs.contentInner;
+            // const contentInner = this.$refs.contentInner;
 
             // 总容器 隐藏溢出，外容器 显示滚动条
             // 计算滚动条宽度，调整外容器大小，使滚动条部分刚好溢出

@@ -2,7 +2,7 @@
  * @Description: 带自定义滚动条的块容器
  * @Author: LXG
  * @Date: 2020-04-21
- * @LastEditTime: 2020-06-15
+ * @LastEditTime: 2020-06-16
  -->
 <template>
     <div class="gun-select" ref="gunSelect">
@@ -54,7 +54,7 @@ export default {
         value: [String, Number],
         // 选项列表
         options: {
-            type: [Array, String],
+            type: Array,
             default: () => []
         },
         // value字段
@@ -85,7 +85,9 @@ export default {
             // 暂存 options
             tempOptions: [],
             // 菜单显示状态
-            menuShow: false
+            menuShow: false,
+            // 菜单需要关闭的标识
+            menuClosing: false
         };
     },
     computed: {
@@ -145,9 +147,29 @@ export default {
             this.toggle();
         },
         /**
+         * @description: 设置菜单关闭标识
+         * @param {Event} e 事件
+         */
+        setMenuClosing(e) {
+            e.stopPropagation();
+            e.cancelBubble = true;
+            this.menuClosing = true;
+        },
+        /**
+         * @description: 关闭菜单
+         * @param {Event} e 事件
+         */
+        closeMenu(e) {
+            // 有关闭标识 则关闭
+            if (this.menuClosing) {
+                this.toggle();
+                this.menuClosing = false;
+            }
+        },
+        /**
          * @description: 切换菜单显示
          */
-        toggle(e) {
+        toggle() {
             // 为了兼容 v-show 和 css动画，加入延迟来处理
             if (!this.menuShow) {
                 this.menuShow = !this.menuShow;
@@ -173,15 +195,32 @@ export default {
             this.tempOptions = val || [];
         },
         menuShow(val) {
+            const ds = this;
             if (val) {
                 this.$refs["selectInput"].focus();
-                document.addEventListener("click", this.toggle, false);
+
+                // 鼠标在内部按下时，鼠标弹起不关闭menu
+                // 鼠标在外部按下时，鼠标弹起关闭menu
+                document.addEventListener(
+                    "mousedown",
+                    this.setMenuClosing,
+                    false
+                );
+                this.$refs["selectMenu"].onmousedown = function(e) {
+                    e.stopPropagation();
+                    e.cancelBubble = true;
+                };
+                document.addEventListener("click", this.closeMenu, false);
                 this.$refs["selectMenu"].onclick = function(e) {
                     e.stopPropagation();
+                    e.cancelBubble = true;
                 };
             } else {
                 this.$refs["selectInput"].blur();
-                document.removeEventListener("click", this.toggle);
+                document.removeEventListener("mousedown", this.setMenuClosing);
+                document.removeEventListener("click", this.closeMenu);
+                this.$refs["selectMenu"].onmousedown = null;
+                this.$refs["selectMenu"].onclick = null;
             }
             this.$nextTick(() => {
                 this.$emit("toggle", val);

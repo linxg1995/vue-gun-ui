@@ -41,7 +41,19 @@ export default {
                 list: new Array(20)
             },
             select: {
-                value: "value0",
+                value: "",
+                // options: [
+                //     '蜜汁凤爪',
+                //     '水晶虾饺',
+                //     '叉烧布拉肠',
+                //     '荷叶糯米鸡',
+                //     '黄金流沙包',
+                //     '三丝炒米粉',
+                //     '板烧鸡腿堡',
+                //     '菠萝咕噜肉',
+                //     '三杯鸡',
+                //     '冰淇淋面包',
+                // ]
                 options: [
                     {
                         value: "value0",
@@ -72,6 +84,26 @@ export default {
                         value: "value5",
                         label: "三丝炒米粉",
                         price: 10
+                    },
+                    {
+                        value: "value6",
+                        label: "板烧鸡腿堡",
+                        price: 9
+                    },
+                    {
+                        value: "value7",
+                        label: "菠萝咕噜肉",
+                        price: 13
+                    },
+                    {
+                        value: "value8",
+                        label: "三杯鸡",
+                        price: 8.5
+                    },
+                    {
+                        value: "value9",
+                        label: "冰淇淋面包",
+                        price: 15
                     }
                 ]
             }

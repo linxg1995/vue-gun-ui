@@ -2,38 +2,67 @@
  * @Description: 工具类函数管理
  * @Author: LXG
  * @Date: 2020-05-14
- * @LastEditTime: 2020-06-08
+ * @LastEditTime: 2020-07-01
  */
 /**
      * @description: 数组快速排序
      * @param {Array} sourceArr 源数组
      * @param {String} conf 配置
      */
-function quicksort(sourceArr, conf = {}) {
-    let config = Object.assign({
-        sortKey: '', // 排序字段
-        DESC: false // 降序
-    }, conf)
-
+function quicksort(sourceArr, config = {}) {
+    // 长度小于等于1时不需要排序
     if (sourceArr.length <= 1) {
         return sourceArr
     }
-    const basic = sourceArr[0]
-    let left = [], right = []
-    for (let i = 1; i < sourceArr.length; i++) {
-        if ((sourceArr[i][config.sortKey] || sourceArr[i])
-            <
-            (basic[config.sortKey] || basic)) {
-            left.push(sourceArr[i])
+
+    const conf = Object.assign({
+        sortKey: '', // 排序字段
+        desc: false // 降序
+    }, config)
+    // 归类
+    let [prepend, mid, append] = [[], [], []]
+    for (let i = 0; i < sourceArr.length; i++) {
+        if (sourceArr[i].prepOrder != undefined &&
+            sourceArr[i].prepOrder != null) {
+            prepend.push(sourceArr[i])
+            continue
+        }
+        if (sourceArr[i].apOrder != undefined &&
+            sourceArr[i].apOrder != null) {
+            append.push(sourceArr[i])
+            continue
+        }
+        mid.push(sourceArr[i])
+    }
+    // 递归排序
+    [prepend, mid, append] = [
+        sort(prepend, 'prepOrder'),
+        sort(mid, conf.sortKey),
+        sort(append, 'apOrder')
+    ]
+
+    return [...prepend, ...mid, ...append]
+
+    function sort(arr, key) {
+        if (arr.length <= 1) {
+            return arr
+        }
+        let [left, basic, right] = [[], arr[0], []]
+        for (let i = 1; i < arr.length; i++) {
+            if ((arr[i][key] || arr[i])
+                <
+                (basic[key] || basic)) {
+                left.push(arr[i])
+            } else {
+                right.push(arr[i])
+            }
+        }
+        if (conf.desc) {
+            return [...sort(right, key), basic, ...sort(left, key)]
         } else {
-            right.push(sourceArr[i])
+            return [...sort(left, key), basic, ...sort(right, key)]
         }
     }
-    if (config.DESC) {
-        return [...quicksort(right, conf), basic, ...quicksort(left, conf)]
-    }
-    return [...quicksort(left, conf), basic, ...quicksort(right, conf)]
-
 }
 
 export default {

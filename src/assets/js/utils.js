@@ -2,13 +2,14 @@
  * @Description: 工具类函数管理
  * @Author: LXG
  * @Date: 2020-05-14
- * @LastEditTime: 2020-07-01
+ * @LastEditTime: 2020-07-06
  */
+
 /**
-     * @description: 数组快速排序
-     * @param {Array} sourceArr 源数组
-     * @param {String} conf 配置
-     */
+ * @description: 数组快速排序
+ * @param {Array} sourceArr 源数组
+ * @param {String} conf 配置
+ */
 function quicksort(sourceArr, config = {}) {
     // 长度小于等于1时不需要排序
     if (sourceArr.length <= 1) {
@@ -48,10 +49,11 @@ function quicksort(sourceArr, config = {}) {
             return arr
         }
         let [left, basic, right] = [[], arr[0], []]
+        let [compareVal, basicVal] = ['', '']
         for (let i = 1; i < arr.length; i++) {
-            if ((arr[i][key] || arr[i])
-                <
-                (basic[key] || basic)) {
+            // 空值合并运算符
+            [compareVal, basicVal] = key ? [arr[i][key] ?? 0, basic[key] ?? 0] : [arr[i] ?? 0, basic ?? 0]
+            if (compareVal < basicVal) {
                 left.push(arr[i])
             } else {
                 right.push(arr[i])

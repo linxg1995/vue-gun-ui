@@ -2,70 +2,113 @@
  * @Description: 工具类函数管理
  * @Author: LXG
  * @Date: 2020-05-14
- * @LastEditTime: 2020-07-06
+ * @LastEditTime: 2020-09-10
  */
 
-/**
- * @description: 数组快速排序
- * @param {Array} sourceArr 源数组
- * @param {String} conf 配置
- */
-function quicksort(sourceArr, config = {}) {
-    // 长度小于等于1时不需要排序
-    if (sourceArr.length <= 1) {
-        return sourceArr
+// SortHandler类 排序器
+class SortHandler {
+    constructor() {
+        this.OPTION = undefined // 全局选项
+        this.prep = undefined // 前队列
+        this.mid = undefined // 中队列
+        this.ap = undefined // 后队列
     }
 
-    const conf = Object.assign({
-        sortKey: '', // 排序字段
-        desc: false // 降序
-    }, config)
-    // 归类
-    let [prepend, mid, append] = [[], [], []]
-    for (let i = 0; i < sourceArr.length; i++) {
-        if (sourceArr[i].prepOrder != undefined &&
-            sourceArr[i].prepOrder != null) {
-            prepend.push(sourceArr[i])
-            continue
+    beforeHandle(arr, option) {
+        this.OPTION = Object.assign({
+            sortKey: '', // 排序字段，默认本身
+            defOrder: 10, // 基础排序值，默认10
+            desc: false // 降序，默认升序
+        }, option)
+        this.prep = new Array()
+        this.mid = new Array()
+        this.ap = new Array()
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].prepOrder != undefined &&
+                arr[i].prepOrder != null) {
+                this.prep.push(arr[i])
+                continue
+            }
+            if (arr[i].apOrder != undefined &&
+                arr[i].apOrder != null) {
+                this.ap.push(arr[i])
+                continue
+            }
+            this.mid.push(arr[i])
         }
-        if (sourceArr[i].apOrder != undefined &&
-            sourceArr[i].apOrder != null) {
-            append.push(sourceArr[i])
-            continue
-        }
-        mid.push(sourceArr[i])
     }
-    // 递归排序
-    [prepend, mid, append] = [
-        sort(prepend, 'prepOrder'),
-        sort(mid, conf.sortKey),
-        sort(append, 'apOrder')
-    ]
+    bubble(sourceArr, option) {
+        // 长度小于等于1时不需要排序
+        if (sourceArr.length <= 1) {
+            return sourceArr
+        }
+        this.beforeHandle(sourceArr, option)
 
-    return [...prepend, ...mid, ...append]
+        this.prep = bubbleSort.call(this, this.prep, 'prepOrder')
+        this.mid = bubbleSort.call(this, this.mid, this.OPTION.sortKey)
+        this.ap = bubbleSort.call(this, this.ap, 'apOrder')
 
-    function sort(arr, key) {
-        if (arr.length <= 1) {
+        return this.afterHandle()
+
+        function bubbleSort(arr, key) {
+            if (arr.length <= 1) {
+                return arr
+            }
+            let [left, right] = [null, null]
+            for (let i = 0, l = arr.length; i < l; i++) {
+                for (let j = 0, m = l - 1; j < m - i; j++) {
+                    left = key ? (arr[m - j - 1][key] ?? this.OPTION.defOrder) : arr[m - j - 1]
+                    right = key ? (arr[m - j][key] ?? this.OPTION.defOrder) : arr[m - j]
+                    if (right < left) {
+                        [arr[m - j - 1], arr[m - j]] = [arr[m - j], arr[m - j - 1]]
+                    }
+                }
+            }
             return arr
         }
-        let [left, basic, right] = [[], arr[0], []]
-        let [compareVal, basicVal] = ['', '']
-        for (let i = 1; i < arr.length; i++) {
-            // 空值合并运算符
-            [compareVal, basicVal] = key ? [arr[i][key] ?? 0, basic[key] ?? 0] : [arr[i] ?? 0, basic ?? 0]
-            if (compareVal < basicVal) {
-                left.push(arr[i])
-            } else {
-                right.push(arr[i])
-            }
+    }
+    quick(sourceArr, option) {
+        // 长度小于等于1时不需要排序
+        if (sourceArr.length <= 1) {
+            return sourceArr
         }
-        if (conf.desc) {
-            return [...sort(right, key), basic, ...sort(left, key)]
-        } else {
-            return [...sort(left, key), basic, ...sort(right, key)]
+        this.beforeHandle(sourceArr, option)
+
+        this.prep = quickSort.call(this, this.prep, 'prepOrder')
+        this.mid = quickSort.call(this, this.mid, this.OPTION.sortKey)
+        this.ap = quickSort.call(this, this.ap, 'apOrder')
+
+        return this.afterHandle()
+
+        function quickSort(arr, key) {
+            if (arr.length <= 1) {
+                return arr
+            }
+            let [left, basic, right] = [[], arr[0], []]
+            // 空值合并运算符
+            let basVal = key ? (basic[key] ?? this.OPTION.defOrder) : basic
+            let compVal = null
+            for (let i = 1; i < arr.length; i++) {
+                compVal = key ? (arr[i][key] ?? this.OPTION.defOrder) : arr[i]
+                if (compVal < basVal) {
+                    left.push(arr[i])
+                } else {
+                    right.push(arr[i])
+                }
+            }
+            return [...quickSort.call(this, left, key), basic, ...quickSort.call(this, right, key)]
         }
     }
+    afterHandle() {
+        if (this.OPTION.desc) {
+            this.mid = this.mid.reverse()
+        }
+        return this.prep.concat(this.mid, this.ap)
+    }
+
 }
+// SortHandler实例
+const sort = new SortHandler()
 
 export default {
     /**
@@ -148,5 +191,31 @@ export default {
         }
         return val
     },
-    quicksort
+    /**
+     * @description: 排序器
+     * @description: .bubble() 冒泡排序
+     * @description: .quick() 快速排序
+     * @param {Array} sourceArr 源数组
+     * @param {Object} option 选项
+     * @param {String}  option.sortKey 排序字段
+     * @param {Boolean} option.desc 是否倒序
+     */
+    sort,
+    /**
+     * @description: 节流
+     * @param {Function} fn 执行函数
+     * @param {Number} delay 延迟时间
+     */
+    throttle() {
+        let time = null
+        return function (fn, delay) {
+            if (!time) {
+                fn()
+                time = setTimeout(function () {
+                    clearTimeout(time)
+                    time = null
+                }, delay);
+            }
+        }
+    }
 }

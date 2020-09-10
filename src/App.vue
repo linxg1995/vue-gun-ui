@@ -7,6 +7,9 @@
         <!-- </div> -->
         <!-- <router-view /> -->
 
+        <!-- CanvasPad -->
+        <h3>Canvas2dPad</h3>
+        <gun-canvas2d-pad id="myCanvasPad"></gun-canvas2d-pad>
         <!-- ScrollContainer -->
         <h3>ScrollContainer</h3>
         <gun-scroll-container style="width: 300px;height: 200px;margin:0 auto;" showX>
@@ -42,18 +45,6 @@ export default {
             },
             select: {
                 value: "",
-                // options: [
-                //     '蜜汁凤爪',
-                //     '水晶虾饺',
-                //     '叉烧布拉肠',
-                //     '荷叶糯米鸡',
-                //     '黄金流沙包',
-                //     '三丝炒米粉',
-                //     '板烧鸡腿堡',
-                //     '菠萝咕噜肉',
-                //     '三杯鸡',
-                //     '冰淇淋面包',
-                // ]
                 options: [
                     {
                         value: "value0",
@@ -109,7 +100,70 @@ export default {
             }
         };
     },
-    mounted() {},
+    mounted() {
+        let list = [
+            {
+                id: 1,
+                isExtend: true,
+                time: "2019-01-21",
+                value: "12",
+                apOrder: 2
+            },
+            {
+                id: 2,
+                isExtend: false,
+                time: "2019-01-11",
+                value: "",
+                apOrder: 6
+            },
+            {
+                id: 3,
+                isExtend: true,
+                time: "2019-01-11",
+                value: "",
+                prepOrder: 3
+            },
+            {
+                id: 4,
+                isExtend: false,
+                name: "a4",
+                time: "2020-06-11",
+                sortIndex: 3
+            },
+            {
+                id: 5,
+                isExtend: true,
+                name: "a5",
+                time: "2020-01-07",
+                sortIndex: 2
+            },
+            {
+                id: 6,
+                isExtend: false,
+                name: "a6",
+                time: "2019-01-11",
+                prepOrder: 1
+            },
+            {
+                id: 7,
+                isExtend: true,
+                name: "a7",
+                time: "2017-02-11"
+            },
+            {
+                id: 8,
+                isExtend: false,
+                name: "a8",
+                time: "2018-01-11",
+                sortIndex: 1
+            }
+        ];
+        console.log(
+            this.$GunUtils.sort.bubble(list, {
+                sortKey: "sortIndex"
+            })
+        );
+    },
     methods: {
         toggleSelect(val) {
             // console.log("toggleSelect:", val);

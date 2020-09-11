@@ -107,28 +107,28 @@ export default {
                 isExtend: true,
                 time: "2019-01-21",
                 value: "12",
-                apOrder: 2
+                prepOrder: 2
             },
             {
                 id: 2,
                 isExtend: false,
                 time: "2019-01-11",
                 value: "",
-                apOrder: 6
+                prepOrder: 1
             },
             {
                 id: 3,
                 isExtend: true,
                 time: "2019-01-11",
                 value: "",
-                prepOrder: 3
+                apOrder: 2
             },
             {
                 id: 4,
                 isExtend: false,
                 name: "a4",
                 time: "2020-06-11",
-                sortIndex: 3
+                apOrder: 1
             },
             {
                 id: 5,
@@ -142,27 +142,25 @@ export default {
                 isExtend: false,
                 name: "a6",
                 time: "2019-01-11",
-                prepOrder: 1
+                sortIndex: 22
             },
             {
                 id: 7,
-                isExtend: true,
-                name: "a7",
-                time: "2017-02-11"
-            },
-            {
-                id: 8,
                 isExtend: false,
-                name: "a8",
-                time: "2018-01-11",
-                sortIndex: 1
+                name: "a7",
+                time: "2019-01-12"
             }
         ];
-        console.log(
-            this.$GunUtils.sort.bubble(list, {
-                sortKey: "sortIndex"
-            })
-        );
+        let test = [3, 6, 2, 2, 7, 1];
+        this.$GunUtils.sort.merge(test, {
+            sortKey: "sortIndex"
+        });
+        console.log(test);
+        // console.log(
+        //     this.$GunUtils.sort.merge(list, {
+        //         sortKey: "sortIndex"
+        //     })
+        // );
     },
     methods: {
         toggleSelect(val) {
